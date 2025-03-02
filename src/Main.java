@@ -13,55 +13,37 @@ public class Main {
     }
 
     private static void showMainMenu() throws Exception {
-        while (true) {
+        while(true) {
             System.out.println("\n=== Access Control System ===");
             System.out.println("1. Create Floor");
             System.out.println("2. Create Room");
             System.out.println("3. Issue Access Card");
             System.out.println("4. Check Access");
             System.out.println("5. Revoke Card");
-            System.out.println("6. Revoke Room");
-            System.out.println("7. Revoke Floor");
-            System.out.println("8. Show All Data");
-            System.out.println("9. Show System Logs");
+            System.out.println("6. Modify Card");
+            System.out.println("7. Revoke Room");
+            System.out.println("8. Revoke Floor");
+            System.out.println("9. Show All Data");
+            System.out.println("10. Show System Logs");
             System.out.println("0. Exit");
             System.out.print("Select: ");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
 
-            switch (choice) {
-                case 1:
-                    createFloor();
-                    break;
-                case 2:
-                    createRoom();
-                    break;
-                case 3:
-                    issueCard();
-                    break;
-                case 4:
-                    checkAccess();
-                    break;
-                case 5:
-                    revokeCard();
-                    break;
-                case 6:
-                    revokeRoom();
-                    break;
-                case 7:
-                    revokeFloor();
-                    break;
-                case 8:
-                    showAllData();
-                    break;
-                case 9:
-                    showLogs();
-                    break;
-                case 0:
-                    System.exit(0);
-                default:
-                    System.out.println("Invalid choice!");
+            switch(choice) {
+                case 1: createFloor(); break;
+                case 2: createRoom(); break;
+                case 3: issueCard(); break;
+                case 4: checkAccess(); break;
+                case 5: revokeCard(); break;
+                case 6: modifyCard(); break;
+                case 7: revokeRoom(); break;
+                case 8: revokeFloor(); break;
+                case 9: showAllData(); break;
+                case 10: showLogs(); break;
+                case 0: System.exit(0);
+                default: System.out.println("Invalid choice!");
             }
         }
     }
@@ -88,7 +70,7 @@ public class Main {
                 .filter(f -> f.getFloorNumber() == floorNum)
                 .findFirst();
 
-        if (floor.isPresent()) {
+        if(floor.isPresent()) {
             Room room = new Room(roomNum, floor.get());
             rooms.add(room);
             AccessLog.recordAccess("Room created: " + roomNum + " on floor " + floorNum);
@@ -133,10 +115,10 @@ public class Main {
 
         Optional<CombinedAccessCard> card = manager.getCards().stream()
                 .filter(c -> c.cardID.equals(cardId))
-                .map(c -> (CombinedAccessCard) c)
+                .map(c -> (CombinedAccessCard)c)
                 .findFirst();
 
-        if (card.isPresent() && room.isPresent()) {
+        if(card.isPresent() && room.isPresent()) {
             boolean access = manager.checkRoomAccess(card.get(), room.get());
             System.out.println("Access " + (access ? "GRANTED" : "DENIED"));
             AccessLog.recordAccess("Access checked: " + cardId + " for room " + roomNum);
@@ -151,6 +133,25 @@ public class Main {
         manager.revokeCard(cardId);
     }
 
+    private static void modifyCard() throws Exception {
+        System.out.print("Enter card ID to modify: ");
+        String cardId = scanner.nextLine();
+
+        System.out.print("New owner name: ");
+        String newOwner = scanner.nextLine();
+
+        System.out.print("New expiry date (yyyy-mm-dd): ");
+        Date newExpiry = sdf.parse(scanner.nextLine());
+
+        System.out.print("New allowed floors (space-separated): ");
+        Set<Integer> newFloors = parseNumbers(scanner.nextLine());
+
+        System.out.print("New allowed rooms (space-separated): ");
+        Set<Integer> newRooms = parseNumbers(scanner.nextLine());
+
+        manager.modifyCard(cardId, newOwner, newExpiry, newFloors, newRooms);
+    }
+
     private static void revokeRoom() {
         System.out.print("Enter room number: ");
         int roomNum = scanner.nextInt();
@@ -160,7 +161,7 @@ public class Main {
                 .filter(r -> r.getRoomNumber() == roomNum)
                 .findFirst();
 
-        if (room.isPresent()) {
+        if(room.isPresent()) {
             Floor floor = room.get().getFloor();
             floor.removeRoom(roomNum);
             rooms.removeIf(r -> r.getRoomNumber() == roomNum);
@@ -180,7 +181,7 @@ public class Main {
                 .filter(f -> f.getFloorNumber() == floorNum)
                 .findFirst();
 
-        if (floor.isPresent()) {
+        if(floor.isPresent()) {
             rooms.removeIf(r -> r.getFloor().getFloorNumber() == floorNum);
             floors.removeIf(f -> f.getFloorNumber() == floorNum);
             AccessLog.recordAccess("Floor revoked: " + floorNum);
@@ -199,7 +200,7 @@ public class Main {
 
         System.out.println("\n=== Cards ===");
         manager.getCards().forEach(c -> {
-            CombinedAccessCard card = (CombinedAccessCard) c;
+            CombinedAccessCard card = (CombinedAccessCard)c;
             System.out.println("ID: " + card.cardID);
             System.out.println("Owner: " + card.ownerName);
             System.out.println("Expiry: " + sdf.format(card.expiryDate));
@@ -211,7 +212,7 @@ public class Main {
     private static void showLogs() {
         System.out.println("\n=== System Logs ===");
         List<String> logs = AccessLog.getLogs();
-        if (logs.isEmpty()) {
+        if(logs.isEmpty()) {
             System.out.println("No logs found.");
         } else {
             logs.forEach(System.out::println);
@@ -220,10 +221,10 @@ public class Main {
 
     private static Set<Integer> parseNumbers(String input) {
         Set<Integer> numbers = new HashSet<>();
-        for (String s : input.split(" ")) {
+        for(String s : input.split(" ")) {
             try {
                 numbers.add(Integer.parseInt(s));
-            } catch (NumberFormatException e) {
+            } catch(NumberFormatException e) {
                 System.out.println("Invalid number: " + s);
             }
         }

@@ -1,6 +1,6 @@
 import java.util.Date;
 
-abstract class AccessCard implements AccessControl {
+public abstract class AccessCard implements AccessControl {
     protected String cardID;
     protected String ownerName;
     protected Date expiryDate;

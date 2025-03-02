@@ -1,4 +1,4 @@
-interface AccessControl {
+public interface AccessControl {
     boolean grantAccess();
     boolean revokeAccess();
 }

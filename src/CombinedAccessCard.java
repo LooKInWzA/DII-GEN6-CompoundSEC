@@ -1,7 +1,7 @@
 import java.util.Date;
 import java.util.Set;
 
-class CombinedAccessCard extends AccessCard {
+public class CombinedAccessCard extends AccessCard {
     Set<Integer> allowedFloors;
     Set<Integer> allowedRooms;
 

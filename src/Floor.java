@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-class Floor {
+public class Floor {
     private int floorNumber;
     private List<Room> rooms = new ArrayList<>();
 
